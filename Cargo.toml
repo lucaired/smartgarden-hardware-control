@@ -10,4 +10,4 @@ edition = "2018"
 rocket = "0.4.7"
 failure = "0.1.5"
 failure_derive = "0.1.5"
-pickledb = { path = "../../" }
+pickledb = "0.4.1"
