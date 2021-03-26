@@ -69,10 +69,18 @@ fn fan_on(number: i32) -> String {
 #[get("/fan/<number>/off")]
 fn fan_off(number: i32) -> String {
     match fan_number_ok(number) {
-        Ok(()) => format!("Hello, fan {} turned off!", number),
+        Ok(()) => {
+            match fan_control(number, &"on") {
+                Ok(()) => format!("Hello, fan {} turned off!", number),
+                Err(err) => {
+                    eprintln!("ERROR: {}", err);
+                    format!("Hello, fan {} could not be turned off!", number)
+                }
+            }
+        }
         Err(err) => {
             eprintln!("ERROR: {}", err);
-            format!("Hello, fan {} could not be turned off!", number)
+            format!("Hello, fan {} could not be turned on!", number)
         }
     }
 }
