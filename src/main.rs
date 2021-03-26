@@ -96,6 +96,18 @@ fn fan_off(number: i32) -> String {
     }
 }
 
+#[get("/fan")]
+fn all_fan_status() -> String {
+    let db = PickleDb::load(FAN_STATE_DATABASE, PickleDbDumpPolicy::DumpUponRequest, SerializationMethod::Json).unwrap();
+    let all_fan = vec![2,3,4,5];
+    let all_fan_state: Vec<i32> = all_fan.into_iter().map(|fan_number| {
+        let state = db.get::<i32>(&fan_number.to_string()).unwrap();
+        state
+    }).collect();
+    format!("{:?}", all_fan_state)
+
+}
+
 fn main() {
     let mut db = PickleDb::new(FAN_STATE_DATABASE, PickleDbDumpPolicy::AutoDump, SerializationMethod::Json);
     // turn all fans off and set their state to off at startup
