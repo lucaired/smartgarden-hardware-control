@@ -8,3 +8,5 @@ edition = "2018"
 
 [dependencies]
 rocket = "0.4.7"
+failure = "0.1.5"
+failure_derive = "0.1.5"
