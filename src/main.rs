@@ -5,9 +5,13 @@
 #[macro_use]
 extern crate failure_derive;
 
+use pickledb::{PickleDb, PickleDbDumpPolicy, SerializationMethod};
 use std::process::{Command, Output};
 
-/// This is an inclusive interval
+const FAN_STATE_DATABASE = "fan_state.db";
+
+/// This is an inclusive interval and
+/// sets the bounds for the usb port numbers.
 const LOWEST_ALLOWED_PORT: i32 = 2;
 const HIGHEST_ALLOWED_PORT: i32 = 5;
 
@@ -52,7 +56,11 @@ fn fan_on(number: i32) -> String {
     match fan_number_ok(number) {
         Ok(()) => {
             match fan_control(number, &"on") {
-                Ok(_) => format!("Hello, fan {} turned on!", number),
+                Ok(_) => {
+                    let db = PickleDb::load(FAN_STATE_DATABASE, PickleDbDumpPolicy::DumpUponRequest, SerializationMethod::Json).unwrap();
+                    db.set(number, &1).unwrap();
+                    format!("Hello, fan {} turned on!", number);
+                },
                 Err(err) => {
                     eprintln!("ERROR: {}", err);
                     format!("Hello, fan {} could not be turned on!", number)
@@ -71,7 +79,11 @@ fn fan_off(number: i32) -> String {
     match fan_number_ok(number) {
         Ok(()) => {
             match fan_control(number, &"on") {
-                Ok(()) => format!("Hello, fan {} turned off!", number),
+                Ok(()) => { 
+                    format!("Hello, fan {} turned off!", number);
+                    let db = PickleDb::load(FAN_STATE_DATABASE, PickleDbDumpPolicy::DumpUponRequest, SerializationMethod::Json).unwrap();
+                    db.set(number, &0).unwrap();
+                },
                 Err(err) => {
                     eprintln!("ERROR: {}", err);
                     format!("Hello, fan {} could not be turned off!", number)
@@ -86,5 +98,6 @@ fn fan_off(number: i32) -> String {
 }
 
 fn main() {
+    let mut db = PickleDb::new(FAN_STATE_DATABASE, PickleDbDumpPolicy::AutoDump, SerializationMethod::Json);
     rocket::ignite().mount("/", routes![fan_on, fan_off]).launch();
 }
