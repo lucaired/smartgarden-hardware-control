@@ -8,7 +8,7 @@ extern crate failure_derive;
 use pickledb::{PickleDb, PickleDbDumpPolicy, SerializationMethod};
 use std::process::{Command, Output};
 
-const FAN_STATE_DATABASE = "fan_state.db";
+const FAN_STATE_DATABASE: &str = "fan_state.db";
 
 /// This is an inclusive interval and
 /// sets the bounds for the usb port numbers.
@@ -57,9 +57,9 @@ fn fan_on(number: i32) -> String {
         Ok(()) => {
             match fan_control(number, &"on") {
                 Ok(_) => {
-                    let db = PickleDb::load(FAN_STATE_DATABASE, PickleDbDumpPolicy::DumpUponRequest, SerializationMethod::Json).unwrap();
-                    db.set(number, &1).unwrap();
-                    format!("Hello, fan {} turned on!", number);
+                    let mut db = PickleDb::load(FAN_STATE_DATABASE, PickleDbDumpPolicy::DumpUponRequest, SerializationMethod::Json).unwrap();
+                    db.set(&number.to_string(), &1).unwrap();
+                    format!("Hello, fan {} turned on!", number)
                 },
                 Err(err) => {
                     eprintln!("ERROR: {}", err);
@@ -79,10 +79,10 @@ fn fan_off(number: i32) -> String {
     match fan_number_ok(number) {
         Ok(()) => {
             match fan_control(number, &"on") {
-                Ok(()) => { 
-                    format!("Hello, fan {} turned off!", number);
-                    let db = PickleDb::load(FAN_STATE_DATABASE, PickleDbDumpPolicy::DumpUponRequest, SerializationMethod::Json).unwrap();
-                    db.set(number, &0).unwrap();
+                Ok(_) => { 
+                    let mut db = PickleDb::load(FAN_STATE_DATABASE, PickleDbDumpPolicy::DumpUponRequest, SerializationMethod::Json).unwrap();
+                    db.set(&number.to_string(), &0).unwrap();
+                    format!("Hello, fan {} turned off!", number)
                 },
                 Err(err) => {
                     eprintln!("ERROR: {}", err);
@@ -98,6 +98,6 @@ fn fan_off(number: i32) -> String {
 }
 
 fn main() {
-    let mut db = PickleDb::new(FAN_STATE_DATABASE, PickleDbDumpPolicy::AutoDump, SerializationMethod::Json);
+    let _db = PickleDb::new(FAN_STATE_DATABASE, PickleDbDumpPolicy::AutoDump, SerializationMethod::Json);
     rocket::ignite().mount("/", routes![fan_on, fan_off]).launch();
 }
