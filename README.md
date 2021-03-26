@@ -21,3 +21,8 @@ sudo apt-get install uhubctl
 ```
 
 ## Start the fan service
+`cargo run`
+
+## Future Work
+- add scheduled activation of fan
+- persist fan state
