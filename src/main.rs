@@ -97,8 +97,8 @@ fn fan_off(number: i32) -> String {
 }
 
 fn main() {
-    let _db = PickleDb::new(FAN_STATE_DATABASE, PickleDbDumpPolicy::AutoDump, SerializationMethod::Json).unwrap();
-    new_db.set("0", &0).unwrap();
-    new_db.set("1", &0).unwrap();
+    let db = PickleDb::new(FAN_STATE_DATABASE, PickleDbDumpPolicy::AutoDump, SerializationMethod::Json);
+    db.set("0", &0).unwrap();
+    db.set("1", &0).unwrap();
     rocket::ignite().mount("/", routes![fan_on, fan_off]).launch();
 }
