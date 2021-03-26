@@ -24,5 +24,6 @@ sudo apt-get install uhubctl
 `cargo run`
 
 ## Future Work
-- add scheduled activation of fan
-- persist fan state
+- [ ] user space usb control software
+- [ ] add scheduled activation of fan
+- [ ] persist fan state
