@@ -50,7 +50,6 @@ fn fan_number_ok(fan_number: i32) -> Result<(), UsbControlError> {
     }
 }
 
-
 #[get("/fan/<number>/on")]
 fn fan_on(number: i32) -> String {
     match fan_number_ok(number) {
@@ -78,7 +77,7 @@ fn fan_on(number: i32) -> String {
 fn fan_off(number: i32) -> String {
     match fan_number_ok(number) {
         Ok(()) => {
-            match fan_control(number, &"on") {
+            match fan_control(number, &"off") {
                 Ok(_) => { 
                     let mut db = PickleDb::load(FAN_STATE_DATABASE, PickleDbDumpPolicy::DumpUponRequest, SerializationMethod::Json).unwrap();
                     db.set(&number.to_string(), &0).unwrap();
