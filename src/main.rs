@@ -98,7 +98,11 @@ fn fan_off(number: i32) -> String {
 
 fn main() {
     let mut db = PickleDb::new(FAN_STATE_DATABASE, PickleDbDumpPolicy::AutoDump, SerializationMethod::Json);
-    db.set("0", &0).unwrap();
-    db.set("1", &0).unwrap();
+    // turn all fans off and set their state to off at startup
+    let all_fan = vec![2,3,4,5];
+    all_fan.into_iter().for_each(|fan_number| {
+        db.set(&fan_number.to_string(), &0).unwrap();
+        fan_control(fan_number, &"off").unwrap();
+    });
     rocket::ignite().mount("/", routes![fan_on, fan_off]).launch();
 }
