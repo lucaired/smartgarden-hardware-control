@@ -50,7 +50,15 @@ fn fan_number_ok(fan_number: i32) -> Result<(), UsbControlError> {
 #[get("/fan/<number>/on")]
 fn fan_on(number: i32) -> String {
     match fan_number_ok(number) {
-        Ok(()) => format!("Hello, fan {} turned on!", number),
+        Ok(()) => {
+            match fan_control(number, &"on") {
+                Ok(_) => format!("Hello, fan {} turned on!", number),
+                Err(err) => {
+                    eprintln!("ERROR: {}", err);
+                    format!("Hello, fan {} could not be turned on!", number)
+                }
+            }
+        }
         Err(err) => {
             eprintln!("ERROR: {}", err);
             format!("Hello, fan {} could not be turned on!", number)
