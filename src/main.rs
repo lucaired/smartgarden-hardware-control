@@ -15,11 +15,10 @@ fn fan_on(number: i32) -> String {
     }
 }
 
-#[get("/off/<number>")]
+#[get("/fan/<number>/off")]
 fn fan_off(number: i32) -> String {
     if port_number_ok(number) {
         format!("Hello, fan {} turned off!", number)
-
     } else {
         format!("Hello, fan {} could not be turned off!", number)
     }
@@ -31,5 +30,5 @@ fn port_number_ok(port_number: i32) -> bool {
 }
 
 fn main() {
-    rocket::ignite().mount("/", routes![fan_on]).launch();
+    rocket::ignite().mount("/", routes![fan_on, fan_off]).launch();
 }
