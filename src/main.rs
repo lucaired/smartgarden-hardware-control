@@ -1,12 +1,31 @@
 #![feature(proc_macro_hygiene, decl_macro)]
+#![feature(plugin)]
+#![plugin(rocket_codegen)]
 
-#[macro_use] extern crate rocket;
-
-#[macro_use]
-extern crate failure_derive;
+extern crate rocket;
+#[macro_use] extern crate failure_derive;
+#[macro_use] extern crate rocket_contrib;
+#[macro_use] extern crate serde_derive;
 
 use pickledb::{PickleDb, PickleDbDumpPolicy, SerializationMethod};
+use rocket::response::content::Json;
+use rocket_contrib::{Json, Value};
 use std::process::{Command, Output};
+
+#[derive(Serialize, Deserialize)]
+struct FanStatus {
+   fan_number: i32,
+   fan_status: i32,
+}
+
+impl FanStatus {
+    fn from_tuple(tuple: (i32, i32)) -> Self {
+        FanStatus {
+            fan_number: tuple.0,
+            fan_status: tuple.1,
+        }
+    }
+}
 
 const FAN_STATE_DATABASE: &str = "fan_state.db";
 
@@ -96,16 +115,20 @@ fn fan_off(number: i32) -> String {
     }
 }
 
+
+
 #[get("/fan")]
-fn all_fan_status() -> String {
+fn all_fan_status() -> Json<Vec<FanStatus>> {
     let db = PickleDb::load(FAN_STATE_DATABASE, PickleDbDumpPolicy::DumpUponRequest, SerializationMethod::Json).unwrap();
     let all_fan = vec![2,3,4,5];
-    let all_fan_state: Vec<i32> = all_fan.into_iter().map(|fan_number| {
+    let all_fan_state: Vec<FanStatus> = all_fan.into_iter().map(|fan_number| {
         let state = db.get::<i32>(&fan_number.to_string()).unwrap();
-        state
-    }).collect();
-    format!("{:?}", all_fan_state)
+        (fan_number, state)
+    })
+    .map(|fan_status: (i32, i32)| FanStatus::from_tuple(fan_status))
+    .collect::<Vec<FanStatus>>();
 
+    Json(json!(all_fan_state))
 }
 
 fn main() {
