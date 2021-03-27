@@ -134,5 +134,5 @@ fn main() {
         db.set(&fan_number.to_string(), &0).unwrap();
         fan_control(fan_number, &"off").unwrap();
     });
-    rocket::ignite().mount("/", routes![fan_on, fan_off]).launch();
+    rocket::ignite().mount("/", routes![fan_on, fan_off, all_fan_status]).launch();
 }
