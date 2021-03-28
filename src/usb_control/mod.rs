@@ -26,10 +26,7 @@ pub fn fan_number_ok(fan_number: i32) -> Result<(), UsbControlError> {
 /// `[2,5]` as fan_numer argument
 pub fn fan_control(fan_number: i32, switch: &str) -> Result<Output, UsbControlError> {
     fan_number_ok(fan_number)?;
-    let command = format!(
-        "sudo uhubctl -a {} -p {}",
-        switch, fan_number
-    );
+    let command = format!("sudo uhubctl -a {} -p {}", switch, fan_number);
     execute(command)
 }
 
