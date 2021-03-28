@@ -1,7 +1,7 @@
 use crate::{usb_control, FAN_STATE_DATABASE};
 use pickledb::{PickleDb, PickleDbDumpPolicy, SerializationMethod};
-use serde::Serialize;
 use rocket_contrib::json::Json;
+use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct FanStatus {
@@ -66,18 +66,14 @@ pub fn all_fan_status() -> Json<Vec<FanStatus>> {
         SerializationMethod::Json,
     )
     .unwrap();
-    let all_fan = vec![2, 3, 4, 5];
-    let all_fan_state: Vec<FanStatus> = all_fan
-        .into_iter()
+    let all_fan_state: Vec<FanStatus> = crate::ALL_FAN
+        .iter()
         .map(|fan_number| {
             let state = db.get::<i32>(&fan_number.to_string()).unwrap();
-            (fan_number, state)
+            (*fan_number, state)
         })
         .map(FanStatus::from_tuple)
         .collect::<Vec<FanStatus>>();
-    
-        // TODO: return JSON
-        Json(all_fan_state)
+
+    Json(all_fan_state)
 }
-
-

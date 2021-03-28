@@ -10,11 +10,11 @@ pub enum UsbControlError {
 
 /// This is an inclusive interval and
 /// sets the bounds for the usb port numbers.
-const LOWEST_ALLOWED_PORT: i32 = 2;
-const HIGHEST_ALLOWED_PORT: i32 = 5;
-
+/// It defaults to [2,5].
 pub fn fan_number_ok(fan_number: i32) -> Result<(), UsbControlError> {
-    if LOWEST_ALLOWED_PORT <= fan_number && fan_number <= HIGHEST_ALLOWED_PORT {
+    let lowest_allowed_port: i32 = *crate::ALL_FAN.first().unwrap_or(&2);
+    let highest_allowed_port: i32 = *crate::ALL_FAN.last().unwrap_or(&5);
+    if lowest_allowed_port <= fan_number && fan_number <= highest_allowed_port {
         Ok(())
     } else {
         Err(UsbControlError::InvalidFanNumber { fan_number })

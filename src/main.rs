@@ -17,6 +17,7 @@ use handler::{
 use pickledb::{PickleDb, PickleDbDumpPolicy, SerializationMethod};
 
 pub const FAN_STATE_DATABASE: &str = "fan_state.db";
+pub const ALL_FAN: [i32; 4] = [2, 3, 4, 5];
 
 fn main() {
     let mut db = PickleDb::new(
@@ -25,10 +26,10 @@ fn main() {
         SerializationMethod::Json,
     );
     // turn all fans off and set their state to off at startup
-    let all_fan = vec![2, 3, 4, 5];
-    all_fan.into_iter().for_each(|fan_number| {
+
+    ALL_FAN.iter().for_each(|fan_number| {
         db.set(&fan_number.to_string(), &0).unwrap();
-        usb_control::fan_control(fan_number, &"off").unwrap();
+        usb_control::fan_control(*fan_number, &"off").unwrap();
     });
     rocket::ignite()
         .mount("/", routes![fan_on, fan_off, all_fan_status])
