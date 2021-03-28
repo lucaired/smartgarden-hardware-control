@@ -16,6 +16,7 @@ use handler::{
 };
 use pickledb::{PickleDb, PickleDbDumpPolicy, SerializationMethod};
 
+// TODO: move to .env
 pub const FAN_STATE_DATABASE: &str = "fan_state.db";
 pub const ALL_FAN: [i32; 4] = [2, 3, 4, 5];
 
