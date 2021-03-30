@@ -24,7 +24,7 @@ sudo apt-get install uhubctl
 ```
 
 ## Start the fan service
-`cargo +nightly run`
+`cargo run`
 
 ## Future Work
 - [ ] user space usb control software
