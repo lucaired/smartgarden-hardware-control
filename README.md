@@ -12,9 +12,9 @@ Download the installer:
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-Select `2) Custom installation`, for `Default host triple?` enter `arm-unknown-linux-gnueabihf` and the `stable` toolchain.
+Select `2) Custom installation`, for `Default host triple?` enter `arm-unknown-linux-gnueabihf` and the `nightly` toolchain.
 
-Since `rocket` requires *nightly*, install the nightly toolchain `rustup install nightly`.
+Since `rocket` requires *nightly*, we need to set this.
 
 ## Install USB control library
 
