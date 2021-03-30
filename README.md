@@ -1,5 +1,5 @@
 # Smartgarden Hardware Hub
-![example workflow](https://github.com/lucaired/smartgarden-hardware-control/.github/actions/workflows/rust.yml/badge.svg)
+![example workflow](https://github.com/lucaired/smartgarden-hardware-control/actions/workflows/rust.yml/badge.svg)
 
 You will need:
 - A Raspberry Pi with USB port and networking capabilities, i'm using a model 3 B V1.2, but feel free to check out the other [Pis](https://www.raspberrypi.org/products/).
