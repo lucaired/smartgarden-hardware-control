@@ -14,6 +14,8 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 Select `2) Custom installation`, for `Default host triple?` enter `arm-unknown-linux-gnueabihf` and the `stable` toolchain.
 
+Since `rocket` requires *nightly*, install the nightly toolchain `rustup install nightly`.
+
 ## Install USB control library
 
 I'm using the [uhubctl](https://github.com/mvp/uhubctl) here, install with
@@ -22,7 +24,7 @@ sudo apt-get install uhubctl
 ```
 
 ## Start the fan service
-`cargo run`
+`cargo +nightly run`
 
 ## Future Work
 - [ ] user space usb control software
