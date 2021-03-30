@@ -20,6 +20,8 @@ impl FanStatus {
 
 #[get("/fan/<number>/on")]
 pub fn fan_on(number: i32) -> String {
+    // TODO: refactor to send http request
+    // TODO: to ubs fan in the configuration array
     match usb_control::fan_control(number, &"on") {
         Ok(_) => {
             let mut db = PickleDb::load(

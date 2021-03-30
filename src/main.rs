@@ -27,7 +27,6 @@ fn main() {
         SerializationMethod::Json,
     );
     // turn all fans off and set their state to off at startup
-
     ALL_FAN.iter().for_each(|fan_number| {
         db.set(&fan_number.to_string(), &0).unwrap();
         usb_control::fan_control(*fan_number, &"off").unwrap();
