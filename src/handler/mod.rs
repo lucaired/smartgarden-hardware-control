@@ -19,7 +19,7 @@ impl FanStatus {
 }
 
 #[get("/fan/<number>/on")]
-pub fn fan_on(number: i32) -> String {
+pub fn fan_on(number: i32) -> Result<String, Box<std::error::Error>> {
     // TODO: refactor to send http request
     // TODO: to ubs fan in the configuration array
     match usb_control::fan_control(number, &"on") {
@@ -31,17 +31,17 @@ pub fn fan_on(number: i32) -> String {
             )
             .unwrap();
             db.set(&number.to_string(), &1).unwrap();
-            format!("Hello, fan {} turned on!", number)
+            Ok(format!("Hello, fan {} turned on!", number))
         }
         Err(err) => {
             eprintln!("ERROR: {}", err);
-            format!("Hello, fan {} could not be turned on!", number)
+            Ok(format!("Hello, fan {} could not be turned on!", number))
         }
     }
 }
 
 #[get("/fan/<number>/off")]
-pub fn fan_off(number: i32) -> String {
+pub fn fan_off(number: i32) -> Result<String, Box<std::error::Error>> {
     match usb_control::fan_control(number, &"off") {
         Ok(_) => {
             let mut db = PickleDb::load(
@@ -51,11 +51,11 @@ pub fn fan_off(number: i32) -> String {
             )
             .unwrap();
             db.set(&number.to_string(), &0).unwrap();
-            format!("Hello, fan {} turned off!", number)
+            Ok(format!("Hello, fan {} turned off!", number))
         }
         Err(err) => {
             eprintln!("ERROR: {}", err);
-            format!("Hello, fan {} could not be turned off!", number)
+            Ok(format!("Hello, fan {} could not be turned off!", number))
         }
     }
 }
