@@ -1,6 +1,7 @@
-use reqwest::{ Client };
+use isahc::prelude::*;
 
-pub async fn set_fan(client: &Client, fan_ressource: &str, state: &str) -> Result<(), Box<dyn std::error::Error>>{
-    client.get(format!("{}/{}", fan_ressource, state)).await?;
+pub async fn set_fan(fan_ressource: &str, state: &str) -> Result<(), isahc::Error>{
+    let mut response = isahc::get(&format!("{}/{}", fan_ressource, state))?;
+    print!("{}", response.text()?);
     Ok(())
 }
