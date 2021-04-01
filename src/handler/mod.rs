@@ -1,7 +1,9 @@
 use crate::{usb_control, FAN_STATE_DATABASE};
 use pickledb::{PickleDb, PickleDbDumpPolicy, SerializationMethod};
+use reqwest::ClientBuilder;
 use rocket_contrib::json::Json;
 use serde::Serialize;
+use std::time::Duration;
 
 #[derive(Serialize)]
 pub struct FanStatus {
@@ -20,24 +22,21 @@ impl FanStatus {
 
 #[get("/fan/<number>/on")]
 pub fn fan_on(number: i32) -> Result<String, Box<std::error::Error>> {
-    // TODO: refactor to send http request
-    // TODO: to ubs fan in the configuration array
-    match usb_control::fan_control(number, &"on") {
-        Ok(_) => {
-            let mut db = PickleDb::load(
-                FAN_STATE_DATABASE,
-                PickleDbDumpPolicy::DumpUponRequest,
-                SerializationMethod::Json,
-            )
-            .unwrap();
-            db.set(&number.to_string(), &1).unwrap();
-            Ok(format!("Hello, fan {} turned on!", number))
-        }
-        Err(err) => {
-            eprintln!("ERROR: {}", err);
-            Ok(format!("Hello, fan {} could not be turned on!", number))
-        }
-    }
+    // TODO: get ressource from function
+    let request_url = String::from("http://localhost:8100/fan/on");
+    
+    let timeout = Duration::new(5, 0);
+    let client = ClientBuilder::new().timeout(timeout).build()?;
+    let response = client.head(&request_url).send()?;
+
+    let mut db = PickleDb::load(
+        FAN_STATE_DATABASE,
+        PickleDbDumpPolicy::DumpUponRequest,
+        SerializationMethod::Json,
+    )?;
+    // TODO: set according to function
+    db.set(&number.to_string(), &1)?;
+    Ok(format!("Hello, fan {} turned on!", number))
 }
 
 #[get("/fan/<number>/off")]
