@@ -6,6 +6,7 @@ extern crate rocket;
 extern crate failure_derive;
 extern crate serde_derive;
 
+mod follower;
 mod handler;
 mod scheduler;
 mod usb_control;
