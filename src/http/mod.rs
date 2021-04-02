@@ -1,9 +1,7 @@
-use crate::{usb_control, FAN_STATE_DATABASE};
+use crate::{FAN_STATE_DATABASE, follower::set_state_to_fan};
 use pickledb::{PickleDb, PickleDbDumpPolicy, SerializationMethod};
-use reqwest::ClientBuilder;
 use rocket_contrib::json::Json;
 use serde::Serialize;
-use std::time::Duration;
 
 #[derive(Serialize)]
 pub struct FanStatus {
@@ -20,43 +18,29 @@ impl FanStatus {
     }
 }
 
-#[get("/fan/<number>/on")]
-pub fn fan_on(number: i32) -> Result<String, Box<std::error::Error>> {
-    // TODO: get ressource from function
-    let request_url = String::from("http://localhost:8100/fan/on");
-    
-    // TODO: what's that ?
-    let client = ClientBuilder::new().build()?;
-    let response = client.head(&request_url).send()?;
-
+fn set_state_to_db(number: i32, state: i32) -> Result<(), Box<dyn std::error::Error>> {
     let mut db = PickleDb::load(
         FAN_STATE_DATABASE,
         PickleDbDumpPolicy::DumpUponRequest,
         SerializationMethod::Json,
     )?;
     // TODO: set according to function
-    db.set(&number.to_string(), &1)?;
+    db.set(&number.to_string(), &state)?;
+    Ok(())
+} 
+
+#[get("/fan/<number>/on")]
+pub fn fan_on(number: i32) -> Result<String, Box<dyn std::error::Error>> {
+    set_state_to_fan(&"on")?;
+    set_state_to_db(number, 1)?;
     Ok(format!("Hello, fan {} turned on!", number))
 }
 
 #[get("/fan/<number>/off")]
-pub fn fan_off(number: i32) -> Result<String, Box<std::error::Error>> {
-    match usb_control::fan_control(number, &"off") {
-        Ok(_) => {
-            let mut db = PickleDb::load(
-                FAN_STATE_DATABASE,
-                PickleDbDumpPolicy::DumpUponRequest,
-                SerializationMethod::Json,
-            )
-            .unwrap();
-            db.set(&number.to_string(), &0).unwrap();
-            Ok(format!("Hello, fan {} turned off!", number))
-        }
-        Err(err) => {
-            eprintln!("ERROR: {}", err);
-            Ok(format!("Hello, fan {} could not be turned off!", number))
-        }
-    }
+pub fn fan_off(number: i32) -> Result<String, Box<dyn std::error::Error>> {
+    set_state_to_fan(&"off")?;
+    set_state_to_db(number, 0)?;
+    Ok(format!("Hello, fan {} turned off!", number))
 }
 
 #[get("/fan")]

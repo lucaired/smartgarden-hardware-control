@@ -2,16 +2,15 @@
 
 #[macro_use]
 extern crate rocket;
-#[macro_use]
 extern crate failure_derive;
 extern crate serde_derive;
 
 mod follower;
-mod handler;
+mod http;
 mod scheduler;
-mod usb_control;
 
-use handler::{
+use follower::set_state_to_fan;
+use http::{
     static_rocket_route_info_for_all_fan_status, static_rocket_route_info_for_fan_off,
     static_rocket_route_info_for_fan_on,
 };
@@ -30,7 +29,7 @@ fn main() {
     // turn all fans off and set their state to off at startup
     ALL_FAN.iter().for_each(|fan_number| {
         db.set(&fan_number.to_string(), &0).unwrap();
-        usb_control::fan_control(*fan_number, &"off").unwrap();
+        set_state_to_fan(&"off").unwrap();
     });
     rocket::ignite()
         .mount("/", routes![fan_on, fan_off, all_fan_status])
