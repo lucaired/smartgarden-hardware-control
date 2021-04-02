@@ -25,8 +25,8 @@ pub fn fan_on(number: i32) -> Result<String, Box<std::error::Error>> {
     // TODO: get ressource from function
     let request_url = String::from("http://localhost:8100/fan/on");
     
-    let timeout = Duration::new(5, 0);
-    let client = ClientBuilder::new().timeout(timeout).build()?;
+    // TODO: what's that ?
+    let client = ClientBuilder::new().build()?;
     let response = client.head(&request_url).send()?;
 
     let mut db = PickleDb::load(
