@@ -28,8 +28,17 @@ fn main() {
     );
     // turn all fans off and set their state to off at startup
     ALL_FAN.iter().for_each(|fan_number| {
-        db.set(&fan_number.to_string(), &0).unwrap();
-        set_state_to_fan(&"off").unwrap();
+        // we need the database
+        match set_state_to_fan(&"off") {
+            Ok(_) => db
+                .set(&fan_number.to_string(), &0)
+                .expect("Could not write to database"),
+            Err(err) => {
+                db.set(&fan_number.to_string(), &-1)
+                    .expect("Could not write to database");
+                format!("Could not set state to fan {} {:?}", fan_number, err);
+            }
+        };
     });
     rocket::ignite()
         .mount("/", routes![fan_on, fan_off, all_fan_status])
